@@ -251,7 +251,7 @@ func (o Options) NewClient() (*Client, error) {
 			insecureSkipVerify = o.TLSConfig.InsecureSkipVerify
 		}
 		if !insecureSkipVerify {
-			if err = tlsconn.VerifyHostname(host); err != nil {
+			if err = tlsconn.VerifyHostname(strings.Split(user, "@")[1])); err != nil {
 				return nil, err
 			}
 		}
