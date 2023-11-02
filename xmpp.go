@@ -479,7 +479,7 @@ func (c *Client) init(o *Options) error {
 				case tls.VersionTLS10, tls.VersionTLS11, tls.VersionTLS12:
 					keyingMaterial = tlsState.TLSUnique
 				default:
-					return errors.New(mechanism + ": unknown TLS version: " + tlsState.Version)
+					return errors.New(mechanism + ": unknown TLS version")
 				}
 				if len(keyingMaterial) == 0 {
 					return errors.New(mechanism + ": no keying material")
