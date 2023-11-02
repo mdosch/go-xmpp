@@ -408,14 +408,17 @@ func (c *Client) init(o *Options) error {
 			for _, m := range f.Mechanisms.Mechanism {
 				switch m {
 				case "SCRAM-SHA-512-PLUS":
+					if tlsConnOK {
 					mechanism = m
+				}
 				case "SCRAM-SHA-256-PLUS":
-					if mechanism != "SCRAM-SHA-512-PLUS" {
+					if mechanism != "SCRAM-SHA-512-PLUS" && tlsConnOK {
 						mechanism = m
 					}
 				case "SCRAM-SHA-1-PLUS":
 					if mechanism != "SCRAM-SHA-512-PLUS" &&
-						mechanism != "SCRAM-SHA-256-PLUS" {
+						mechanism != "SCRAM-SHA-256-PLUS" &&
+						tlsConnOK{
 						mechanism = m
 					}
 				case "SCRAM-SHA-512":
