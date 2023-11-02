@@ -348,7 +348,6 @@ func cnonce() string {
 }
 
 func (c *Client) init(o *Options) error {
-
 	var domain string
 	var user string
 	a := strings.SplitN(o.User, "@", 2)
@@ -406,19 +405,19 @@ func (c *Client) init(o *Options) error {
 		}
 		mechanism = ""
 		if o.Mechanism == "" {
-		for _, m := range f.Mechanisms.Mechanism {
-			switch m {
-			case "SCRAM-SHA-512-PLUS":
-				if tlsConnOK {
-					mechanism = m
-					scramPlus = true
-				}
-			case "SCRAM-SHA-512":
-				if mechanism != "SCRAM-SHA-512-PLUS" &&
-					mechanism != "SCRAM-SHA-256-PLUS" &&
-					mechanism != "SCRAM-SHA-1-PLUS" {
-					mechanism = m
-				}
+			for _, m := range f.Mechanisms.Mechanism {
+				switch m {
+				case "SCRAM-SHA-512-PLUS":
+					if tlsConnOK {
+						mechanism = m
+						scramPlus = true
+					}
+				case "SCRAM-SHA-512":
+					if mechanism != "SCRAM-SHA-512-PLUS" &&
+						mechanism != "SCRAM-SHA-256-PLUS" &&
+						mechanism != "SCRAM-SHA-1-PLUS" {
+						mechanism = m
+					}
 				case "SCRAM-SHA-256":
 					if mechanism != "SCRAM-SHA-512" {
 						mechanism = m
@@ -726,7 +725,7 @@ func (c *Client) init(o *Options) error {
 	c.domain = domain
 
 	if o.Session {
-		//if server support session, open it
+		// if server support session, open it
 		fmt.Fprintf(c.stanzaWriter, "<iq to='%s' type='set' id='%x'><session xmlns='%s'/></iq>\n", xmlEscape(domain), cookie, nsSession)
 	}
 
@@ -762,7 +761,7 @@ func (c *Client) startTLSIfRequired(f *streamFeatures, o *Options, domain string
 	tc := o.TLSConfig
 	if tc == nil {
 		tc = DefaultConfig.Clone()
-		//TODO(scott): we should consider using the server's address or reverse lookup
+		// TODO(scott): we should consider using the server's address or reverse lookup
 		tc.ServerName = domain
 	}
 	t := tls.Client(c.conn, tc)
@@ -954,8 +953,10 @@ func (c *Client) Recv() (stanza interface{}, err error) {
 						return Chat{}, err
 					}
 
-					return IQ{ID: v.ID, From: v.From, To: v.To, Type: v.Type,
-						Query: res}, nil
+					return IQ{
+						ID: v.ID, From: v.From, To: v.To, Type: v.Type,
+						Query: res,
+					}, nil
 				}
 			case v.Type == "result":
 				switch v.ID {
@@ -1083,8 +1084,10 @@ func (c *Client) Recv() (stanza interface{}, err error) {
 						return Chat{}, err
 					}
 
-					return IQ{ID: v.ID, From: v.From, To: v.To, Type: v.Type,
-						Query: res}, nil
+					return IQ{
+						ID: v.ID, From: v.From, To: v.To, Type: v.Type,
+						Query: res,
+					}, nil
 				}
 			case v.Query.XMLName.Local == "":
 				return IQ{ID: v.ID, From: v.From, To: v.To, Type: v.Type}, nil
@@ -1094,8 +1097,10 @@ func (c *Client) Recv() (stanza interface{}, err error) {
 					return Chat{}, err
 				}
 
-				return IQ{ID: v.ID, From: v.From, To: v.To, Type: v.Type,
-					Query: res}, nil
+				return IQ{
+					ID: v.ID, From: v.From, To: v.To, Type: v.Type,
+					Query: res,
+				}, nil
 			}
 		}
 	}
