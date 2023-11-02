@@ -408,20 +408,15 @@ func (c *Client) init(o *Options) error {
 			for _, m := range f.Mechanisms.Mechanism {
 				switch m {
 				case "SCRAM-SHA-512-PLUS":
-					if tlsConnOK {
-						mechanism = m
-						scramPlus = true
-					}
+					mechanism = m
 				case "SCRAM-SHA-256-PLUS":
 					if mechanism != "SCRAM-SHA-512-PLUS" {
 						mechanism = m
-						scramPlus = true
 					}
 				case "SCRAM-SHA-1-PLUS":
 					if mechanism != "SCRAM-SHA-512-PLUS" &&
 						mechanism != "SCRAM-SHA-256-PLUS" {
 						mechanism = m
-						scramPlus = true
 					}
 				case "SCRAM-SHA-512":
 					if mechanism != "SCRAM-SHA-512-PLUS" &&
@@ -466,6 +461,9 @@ func (c *Client) init(o *Options) error {
 			}
 		}
 		if strings.HasPrefix(mechanism, "SCRAM-SHA") {
+			if strings.HasSuffix(m, "PLUS") {
+				scramPlus = true
+			}
 			if scramPlus {
 				tlsState := tlsConn.ConnectionState()
 				switch tlsState.Version {
