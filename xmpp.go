@@ -415,11 +415,13 @@ func (c *Client) init(o *Options) error {
 				case "SCRAM-SHA-256-PLUS":
 					if mechanism != "SCRAM-SHA-512-PLUS" {
 						mechanism = m
+						scramPlus = true
 					}
 				case "SCRAM-SHA-1-PLUS":
 					if mechanism != "SCRAM-SHA-512-PLUS" &&
 						mechanism != "SCRAM-SHA-256-PLUS" {
 						mechanism = m
+						scramPlus = true
 					}
 				case "SCRAM-SHA-512":
 					if mechanism != "SCRAM-SHA-512-PLUS" &&
