@@ -464,7 +464,7 @@ func (c *Client) init(o *Options) error {
 			}
 		}
 		if strings.HasPrefix(mechanism, "SCRAM-SHA") {
-			if strings.HasSuffix(m, "PLUS") {
+			if strings.HasSuffix(mechanism, "PLUS") {
 				scramPlus = true
 			}
 			if scramPlus {
