@@ -1828,7 +1828,7 @@ func (c *Client) Recv() (stanza interface{}, err error) {
 }
 
 // Send sends the message wrapped inside an XMPP message stanza body.
-func (c *Client) Send(chat Chat) (n int, err error) {
+func (c *Client) Send(chat Chat) (Chat, error) {
 	var subtext, thdtext, oobtext string
 	if chat.Subject != `` {
 		subtext = `<subject>` + xmlEscape(chat.Subject) + `</subject>`
@@ -1853,17 +1853,18 @@ func (c *Client) Send(chat Chat) (n int, err error) {
 	}
 
 	chat.Text = validUTF8(chat.Text)
-	id := getUUID()
+	chat.OriginID = getUUID()
 	stanza := fmt.Sprintf("<message to='%s' type='%s' id='%s' xml:lang='en'>%s<body>%s</body>"+
 		"<origin-id xmlns='%s' id='%s'/>%s%s</message>\n",
-		xmlEscape(chat.Remote), xmlEscape(chat.Type), id, subtext, xmlEscape(chat.Text),
-		XMPPNS_SID_0, id, oobtext, thdtext)
+		xmlEscape(chat.Remote), xmlEscape(chat.Type), chat.OriginID, subtext, xmlEscape(chat.Text),
+		XMPPNS_SID_0, chat.OriginID, oobtext, thdtext)
 	if c.LimitMaxBytes != 0 && len(stanza) > c.LimitMaxBytes {
-		return 0, fmt.Errorf("stanza size (%v bytes) exceeds server limit (%v bytes)",
+		return chat, fmt.Errorf("stanza size (%v bytes) exceeds server limit (%v bytes)",
 			len(stanza), c.LimitMaxBytes)
 	}
 
-	return fmt.Fprint(c.stanzaWriter, stanza)
+	_, err := fmt.Fprint(c.stanzaWriter, stanza)
+	return chat, err
 }
 
 // SendOOB sends OOB data wrapped inside an XMPP message stanza. Any message body will be discarded
