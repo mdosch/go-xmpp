@@ -1555,6 +1555,7 @@ type IQ struct {
 	To    string
 	Type  string
 	Query []byte
+	Error string
 }
 
 // Recv waits to receive the next XMPP stanza.
@@ -1694,29 +1695,17 @@ func (c *Client) Recv() (stanza interface{}, err error) {
 					index := slices.Index(c.subIDs, v.ID)
 					c.subIDs = slices.Delete(c.subIDs, index, index)
 					// Pubsub subscription failed
-					var errs []clientPubsubError
-					err := xml.Unmarshal([]byte(v.Error.InnerXML), &errs)
-					if err != nil {
-						return PubsubSubscription{}, err
-					}
-
-					var errsStr []string
-					for _, e := range errs {
-						errsStr = append(errsStr, e.XMLName.Local)
-					}
-
 					return PubsubSubscription{
-						Errors: errsStr,
+						Errors: []string{v.Error.Any.Local},
 					}, nil
 				default:
 					res, err := xml.Marshal(v.Query)
 					if err != nil {
 						return Chat{}, err
 					}
-
 					return IQ{
 						ID: v.ID, From: v.From, To: v.To, Type: v.Type,
-						Query: res,
+						Query: res, Error: v.Error.Any.Local,
 					}, nil
 				}
 			case v.Type == "result":
@@ -2335,12 +2324,11 @@ type clientIQ struct {
 }
 
 type clientError struct {
-	XMLName  xml.Name `xml:"jabber:client error"`
-	Code     string   `xml:",attr"`
-	Type     string   `xml:"type,attr"`
-	Any      xml.Name
-	InnerXML []byte `xml:",innerxml"`
-	Text     string
+	XMLName xml.Name `xml:"jabber:client error"`
+	Any     xml.Name `xml:",any"`
+	Code    string   `xml:",attr"`
+	Type    string   `xml:"type,attr"`
+	Text    string   `xml:",chardata"`
 }
 
 type clientQuery struct {
