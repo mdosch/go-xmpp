@@ -1702,7 +1702,7 @@ func (c *Client) Recv() (stanza interface{}, err error) {
 					c.subIDs = slices.Delete(c.subIDs, index, index)
 					// Pubsub subscription failed
 					return PubsubSubscription{
-						Errors: []string{v.Error.Any.Local},
+						Error: v.Error.Any.Local,
 					}, nil
 				default:
 					res, err := xml.Marshal(v.Query)
@@ -1770,10 +1770,10 @@ func (c *Client) Recv() (stanza interface{}, err error) {
 						}
 
 						return PubsubSubscription{
-							SubID:  sub.SubID,
-							JID:    sub.JID,
-							Node:   sub.Node,
-							Errors: nil,
+							SubID: sub.SubID,
+							JID:   sub.JID,
+							Node:  sub.Node,
+							Error: "",
 						}, nil
 					}
 				case slices.Contains(c.unsubIDs, v.ID):
@@ -1787,19 +1787,19 @@ func (c *Client) Recv() (stanza interface{}, err error) {
 						}
 
 						return PubsubUnsubscription{
-							SubID:  sub.SubID,
-							JID:    v.From,
-							Node:   sub.Node,
-							Errors: nil,
+							SubID: sub.SubID,
+							JID:   v.From,
+							Node:  sub.Node,
+							Error: "",
 						}, nil
 					} else {
 						// Unsubscribing MAY contain a pubsub element. But it does
 						// not have to
 						return PubsubUnsubscription{
-							SubID:  "",
-							JID:    v.From,
-							Node:   "",
-							Errors: nil,
+							SubID: "",
+							JID:   v.From,
+							Node:  "",
+							Error: "",
 						}, nil
 					}
 				case slices.Contains(c.itemsIDs, v.ID):

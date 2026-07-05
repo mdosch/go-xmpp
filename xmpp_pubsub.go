@@ -40,10 +40,10 @@ type PubsubEvent struct {
 }
 
 type PubsubSubscription struct {
-	SubID  string
-	JID    string
-	Node   string
-	Errors []string
+	SubID string
+	JID   string
+	Node  string
+	Error string
 }
 type PubsubUnsubscription PubsubSubscription
 
