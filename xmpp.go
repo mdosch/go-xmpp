@@ -1549,13 +1549,19 @@ type Presence struct {
 	Error       string
 }
 
+type IQError struct {
+	Condition string
+	Type      string
+	Text      string
+}
+
 type IQ struct {
 	ID    string
 	From  string
 	To    string
 	Type  string
 	Query []byte
-	Error string
+	Error IQError
 }
 
 // Recv waits to receive the next XMPP stanza.
@@ -1705,7 +1711,12 @@ func (c *Client) Recv() (stanza interface{}, err error) {
 					}
 					return IQ{
 						ID: v.ID, From: v.From, To: v.To, Type: v.Type,
-						Query: res, Error: v.Error.Any.Local,
+						Query: res,
+						Error: IQError{
+							Condition: v.Error.Any.Local,
+							Type:      v.Error.Type,
+							Text:      v.Error.Text.Text,
+						},
 					}, nil
 				}
 			case v.Type == "result":
@@ -2328,7 +2339,11 @@ type clientError struct {
 	Any     xml.Name `xml:",any"`
 	Code    string   `xml:",attr"`
 	Type    string   `xml:"type,attr"`
-	Text    string   `xml:",chardata"`
+	Text    struct {
+		Text  string `xml:",chardata"`
+		Xmlns string `xml:"xmlns,attr"`
+		Lang  string `xml:"lang,attr"`
+	} `xml:"text"`
 }
 
 type clientQuery struct {

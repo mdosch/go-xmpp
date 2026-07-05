@@ -54,7 +54,8 @@ func handleAvatarData(itemsBody []byte, from, id string) (AvatarData, error) {
 
 	// Base64-decode the avatar data to check its SHA1 hash
 	dataRaw, err := base64.StdEncoding.DecodeString(
-		string(data.Data))
+		string(data.Data),
+	)
 	if err != nil {
 		return AvatarData{}, err
 	}
